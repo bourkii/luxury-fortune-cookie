@@ -32,7 +32,6 @@ const fortunes = [
 ];
 
 const STORAGE_KEY = "luxury-fortune-history";
-
 const cookieButton = document.getElementById("fortuneCookie");
 const cookiePanel = document.getElementById("cookiePanel");
 const fortuneCard = document.getElementById("fortuneCard");
@@ -40,8 +39,28 @@ const fortuneText = document.getElementById("fortuneText");
 const anotherFortuneButton = document.getElementById("anotherFortune");
 const confettiLayer = document.getElementById("confettiLayer");
 
-let usedFortuneIds = loadUsedFortuneIds();
+let usedFortuneIds = readUsedFortunes();
 let isOpening = false;
+
+function readUsedFortunes() {
+  try {
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn("Unable to read fortune history.", error);
+    return [];
+  }
+}
+
+function saveUsedFortunes() {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(usedFortuneIds));
+  } catch (error) {
+    console.warn("Unable to save fortune history.", error);
+  }
+}
 
 function shuffleArray(items) {
   const copy = [...items];
@@ -52,41 +71,18 @@ function shuffleArray(items) {
   return copy;
 }
 
-function loadUsedFortuneIds() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return [];
-    const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.warn("Unable to read fortune history from localStorage.", error);
-    return [];
-  }
-}
-
-function saveUsedFortuneIds() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(usedFortuneIds));
-  } catch (error) {
-    console.warn("Unable to save fortune history to localStorage.", error);
-  }
-}
-
 function getNextFortune() {
   let available = fortunes.filter((fortune) => !usedFortuneIds.includes(fortune.id));
 
-  if (!available.length) {
+  if (available.length === 0) {
     usedFortuneIds = [];
-    saveUsedFortuneIds();
+    saveUsedFortunes();
     available = [...fortunes];
   }
 
-  const shuffled = shuffleArray(available);
-  const chosen = shuffled[0];
-
+  const chosen = shuffleArray(available)[0];
   usedFortuneIds.push(chosen.id);
-  saveUsedFortuneIds();
-
+  saveUsedFortunes();
   return chosen.text;
 }
 
@@ -94,409 +90,121 @@ function createConfetti() {
   confettiLayer.innerHTML = "";
 
   const colors = ["#b89b5e", "#f5f0e6", "#17352a", "#641f2a", "#d9c18d"];
-  const pieces = 26;
+  const totalPieces = 28;
 
-  for (let index = 0; index < pieces; index += 1) {
+  for (let index = 0; index < totalPieces; index += 1) {
     const piece = document.createElement("span");
     piece.className = "confetti-piece";
 
-    const angle = (Math.PI * 2 * index) / pieces;
+    const angle = (Math.PI * 2 * index) / totalPieces;
     const radius = 90 + Math.random() * 110;
     const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius + 60;
+    const y = Math.sin(angle) * radius + 50;
     const spin = (Math.random() * 500 - 250).toFixed(0);
-    const duration = (1.6 + Math.random() * 1.4).toFixed(2);
+    const duration = (1.6 + Math.random() * 1.5).toFixed(2);
 
     piece.style.setProperty("--x", `${x}px`);
     piece.style.setProperty("--y", `${y}px`);
     piece.style.setProperty("--spin", `${spin}deg`);
     piece.style.setProperty("--duration", `${duration}s`);
     piece.style.background = colors[index % colors.length];
-    piece.style.transform = `translate3d(0, 0, 0) rotate(${Math.random() * 360}deg)`;
 
     confettiLayer.appendChild(piece);
   }
 }
 
-function showFortuneMessage(message) {
+function showCookie() {
+  cookiePanel.classList.remove("is-hidden");
+  cookiePanel.classList.remove("hidden");
+  cookieButton.classList.remove("hidden");
+  cookieButton.disabled = false;
+  cookieButton.setAttribute("aria-hidden", "false");
+}
+
+function hideCookie() {
+  cookiePanel.classList.add("is-hidden");
+  cookieButton.classList.add("hidden");
+  cookieButton.disabled = true;
+  cookieButton.setAttribute("aria-hidden", "true");
+}
+
+function showFortune(message) {
   fortuneText.textContent = message;
   fortuneCard.classList.remove("hidden");
   fortuneCard.classList.add("is-visible");
+  fortuneCard.setAttribute("aria-hidden", "false");
 }
 
-function hideFortuneMessage() {
+function hideFortune() {
   fortuneCard.classList.remove("is-visible");
   fortuneCard.classList.add("hidden");
-}
-
-function resetToCookie() {
-  cookieButton.classList.remove("is-opening");
-  cookieButton.classList.remove("hidden");
-  cookiePanel.classList.remove("is-hidden");
-  anotherFortuneButton.classList.add("hidden");
-  hideFortuneMessage();
-  isOpening = false;
+  fortuneCard.setAttribute("aria-hidden", "true");
 }
 
 function openFortuneCookie() {
   if (isOpening) return;
 
   isOpening = true;
+  cookieButton.classList.remove("is-opening");
+  void cookieButton.offsetWidth;
   cookieButton.classList.add("is-opening");
   createConfetti();
 
   const fortuneMessage = getNextFortune();
 
   window.setTimeout(() => {
-    cookiePanel.classList.add("is-hidden");
-    cookieButton.classList.add("hidden");
-    showFortuneMessage(fortuneMessage);
+    hideCookie();
+    showFortune(fortuneMessage);
     anotherFortuneButton.classList.remove("hidden");
+    anotherFortuneButton.disabled = false;
   }, 650);
 
   window.setTimeout(() => {
     cookieButton.classList.remove("is-opening");
+    isOpening = false;
   }, 1250);
+}
+
+function resetForNewCycle() {
+  hideFortune();
+  anotherFortuneButton.classList.add("hidden");
+  anotherFortuneButton.disabled = true;
+  showCookie();
 }
 
 cookieButton.addEventListener("click", openFortuneCookie);
 
 anotherFortuneButton.addEventListener("click", () => {
-  anotherFortuneButton.classList.add("hidden");
-  hideFortuneMessage();
-  cookiePanel.classList.remove("is-hidden");
-  cookieButton.classList.remove("hidden");
-  cookieButton.classList.remove("is-opening");
-  isOpening = false;
+  resetForNewCycle();
   openFortuneCookie();
 });
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    if (document.activeElement === cookieButton && !cookieButton.classList.contains("hidden")) {
-      event.preventDefault();
-      openFortuneCookie();
-    }
-
-    if (document.activeElement === anotherFortuneButton && !anotherFortuneButton.classList.contains("hidden")) {
-      event.preventDefault();
-      anotherFortuneButton.click();
-    }
+  if ((event.key === "Enter" || event.key === " ") && !cookieButton.classList.contains("hidden")) {
+    event.preventDefault();
+    openFortuneCookie();
   }
-});
 
-window.addEventListener("load", () => {
-  fortuneText.textContent = "Something beautiful is waiting for you today.";
+  if ((event.key === "Enter" || event.key === " ") && !anotherFortuneButton.classList.contains("hidden")) {
+    event.preventDefault();
+    anotherFortuneButton.click();
+  }
 });
 
 if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   cookieButton.style.animation = "none";
 }
 
-const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-reducedMotionQuery.addEventListener?.("change", () => {
-  cookieButton.style.animation = reducedMotionQuery.matches ? "none" : "float-cookie 5.2s ease-in-out infinite";
-});
-
-resetToCookie();
-
-if (usedFortuneIds.length >= fortunes.length) {
-  usedFortuneIds = [];
-  saveUsedFortuneIds();
-}
-
-if (!fortuneCard.classList.contains("hidden")) {
-  fortuneCard.classList.add("hidden");
-}
-
-if (cookieButton.classList.contains("hidden")) {
-  cookieButton.classList.remove("hidden");
-}
-
-if (anotherFortuneButton.classList.contains("hidden") === false) {
+function initialize() {
+  hideFortune();
   anotherFortuneButton.classList.add("hidden");
+  anotherFortuneButton.disabled = true;
+  showCookie();
+
+  if (usedFortuneIds.length >= fortunes.length) {
+    usedFortuneIds = [];
+    saveUsedFortunes();
+  }
 }
 
-console.info("Luxury fortune cookie loaded successfully.");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"path":"script.js"}]} oneTime use not allowed? Need check use of push_files schema maybe only branch, files message owner repo. I passed owner/repo absent? Wait I omitted owner, repo in JSON? I did pass branch/files only. Because instructions on push_files require owner and repo. I didn't include. Did tool accept maybe not because call valid? It likely failed? Need verify. It said 
+initialize();
