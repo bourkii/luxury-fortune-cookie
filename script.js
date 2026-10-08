@@ -123,48 +123,46 @@ document.addEventListener("DOMContentLoaded", () => {
     cookiePanel.classList.remove("is-hidden");
     cookieButton.classList.remove("hidden");
     cookieButton.disabled = false;
-    cookieButton.setAttribute("aria-hidden", "false");
   }
 
   function hideCookie() {
     cookiePanel.classList.add("is-hidden");
     cookieButton.classList.add("hidden");
     cookieButton.disabled = true;
-    cookieButton.setAttribute("aria-hidden", "true");
   }
 
   function showFortune(message) {
     fortuneText.textContent = message;
     fortuneCard.classList.remove("hidden");
     fortuneCard.classList.add("is-visible");
-    fortuneCard.setAttribute("aria-hidden", "false");
   }
 
   function hideFortune() {
     fortuneCard.classList.remove("is-visible");
     fortuneCard.classList.add("hidden");
-    fortuneCard.setAttribute("aria-hidden", "true");
   }
 
   function openFortuneCookie() {
     if (isOpening) return;
     isOpening = true;
 
+    // Remove and re-add class to restart animation
     cookieButton.classList.remove("is-opening");
+    // Force browser reflow to trigger animation restart
     void cookieButton.offsetWidth;
     cookieButton.classList.add("is-opening");
 
     createConfetti();
-    const FortuneMessage = getNextFortune();
+    const fortuneMessage = getNextFortune();
 
-    window.setTimeout(() => {
+    setTimeout(() => {
       hideCookie();
-      showFortune(FortuneMessage);
+      showFortune(fortuneMessage);
       anotherFortuneButton.classList.remove("hidden");
       anotherFortuneButton.disabled = false;
     }, 650);
 
-    window.setTimeout(() => {
+    setTimeout(() => {
       cookieButton.classList.remove("is-opening");
       isOpening = false;
     }, 1250);
@@ -179,17 +177,26 @@ document.addEventListener("DOMContentLoaded", () => {
     cookieButton.classList.remove("is-opening");
   }
 
-  cookieButton.addEventListener("click", openFortuneCookie);
+  // Main click handler for cookie
+  cookieButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openFortuneCookie();
+  });
 
-  anotherFortuneButton.addEventListener("click", () => {
+  // Click handler for another fortune button
+  anotherFortuneButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     resetForNewCycle();
     setTimeout(() => {
       openFortuneCookie();
     }, 100);
   });
 
+  // Keyboard support
   window.addEventListener("keydown", (event) => {
-    if ((event.key === "Enter" || event.key === " ") && !cookieButton.classList.contains("hidden")) {
+    if ((event.key === "Enter" || event.key === " ") && !cookieButton.classList.contains("hidden") && !isOpening) {
       event.preventDefault();
       openFortuneCookie();
     }
@@ -200,11 +207,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Initialize on page load
   function initialize() {
     hideFortune();
     anotherFortuneButton.classList.add("hidden");
     anotherFortuneButton.disabled = true;
     showCookie();
+    isOpening = false;
+    cookieButton.classList.remove("is-opening");
 
     if (usedFortuneIds.length >= fortunes.length) {
       usedFortuneIds = [];
