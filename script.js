@@ -31,180 +31,186 @@ const fortunes = [
   { id: 30, text: "Your life already contains more beauty than you can see from here." }
 ];
 
-const STORAGE_KEY = "luxury-fortune-history";
-const cookieButton = document.getElementById("fortuneCookie");
-const cookiePanel = document.getElementById("cookiePanel");
-const fortuneCard = document.getElementById("fortuneCard");
-const fortuneText = document.getElementById("fortuneText");
-const anotherFortuneButton = document.getElementById("anotherFortune");
-const confettiLayer = document.getElementById("confettiLayer");
+document.addEventListener("DOMContentLoaded", () => {
+  const STORAGE_KEY = "luxury-fortune-history";
+  const cookieButton = document.getElementById("fortuneCookie");
+  const cookiePanel = document.getElementById("cookiePanel");
+  const fortuneCard = document.getElementById("fortuneCard");
+  const fortuneText = document.getElementById("fortuneText");
+  const anotherFortuneButton = document.getElementById("anotherFortune");
+  const confettiLayer = document.getElementById("confettiLayer");
 
-let usedFortuneIds = readUsedFortunes();
-let isOpening = false;
-
-function readUsedFortunes() {
-  try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (!saved) return [];
-    const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.warn("Unable to read fortune history.", error);
-    return [];
+  if (!cookieButton || !cookiePanel || !fortuneCard || !fortuneText || !anotherFortuneButton || !confettiLayer) {
+    console.error("Required fortune-cookie elements are missing.");
+    return;
   }
-}
 
-function saveUsedFortunes() {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(usedFortuneIds));
-  } catch (error) {
-    console.warn("Unable to save fortune history.", error);
+  let usedFortuneIds = loadUsedFortunes();
+  let isOpening = false;
+
+  function loadUsedFortunes() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.warn("Unable to read saved fortunes.", error);
+      return [];
+    }
   }
-}
 
-function shuffleArray(items) {
-  const copy = [...items];
-  for (let index = copy.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
-    [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
+  function saveUsedFortunes() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(usedFortuneIds));
+    } catch (error) {
+      console.warn("Unable to save fortunes.", error);
+    }
   }
-  return copy;
-}
 
-function getNextFortune() {
-  let available = fortunes.filter((fortune) => !usedFortuneIds.includes(fortune.id));
+  function shuffleArray(items) {
+    const copy = [...items];
+    for (let index = copy.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
+    }
+    return copy;
+  }
 
-  if (available.length === 0) {
-    usedFortuneIds = [];
+  function getNextFortune() {
+    let available = fortunes.filter((fortune) => !usedFortuneIds.includes(fortune.id));
+
+    if (available.length === 0) {
+      usedFortuneIds = [];
+      saveUsedFortunes();
+      available = [...fortunes];
+    }
+
+    const chosen = shuffleArray(available)[0];
+    usedFortuneIds.push(chosen.id);
     saveUsedFortunes();
-    available = [...fortunes];
+    return chosen.text;
   }
 
-  const chosen = shuffleArray(available)[0];
-  usedFortuneIds.push(chosen.id);
-  saveUsedFortunes();
-  return chosen.text;
-}
+  function createConfetti() {
+    confettiLayer.innerHTML = "";
 
-function createConfetti() {
-  confettiLayer.innerHTML = "";
+    const colors = ["#b89b5e", "#f5f0e6", "#17352a", "#641f2a", "#d9c18d"];
+    const totalPieces = 28;
 
-  const colors = ["#b89b5e", "#f5f0e6", "#17352a", "#641f2a", "#d9c18d"];
-  const totalPieces = 28;
+    for (let index = 0; index < totalPieces; index += 1) {
+      const piece = document.createElement("span");
+      piece.className = "confetti-piece";
 
-  for (let index = 0; index < totalPieces; index += 1) {
-    const piece = document.createElement("span");
-    piece.className = "confetti-piece";
+      const angle = (Math.PI * 2 * index) / totalPieces;
+      const radius = 90 + Math.random() * 110;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius + 50;
+      const spin = (Math.random() * 500 - 250).toFixed(0);
+      const duration = (1.6 + Math.random() * 1.5).toFixed(2);
 
-    const angle = (Math.PI * 2 * index) / totalPieces;
-    const radius = 90 + Math.random() * 110;
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius + 50;
-    const spin = (Math.random() * 500 - 250).toFixed(0);
-    const duration = (1.6 + Math.random() * 1.5).toFixed(2);
+      piece.style.setProperty("--x", `${x}px`);
+      piece.style.setProperty("--y", `${y}px`);
+      piece.style.setProperty("--spin", `${spin}deg`);
+      piece.style.setProperty("--duration", `${duration}s`);
+      piece.style.background = colors[index % colors.length];
 
-    piece.style.setProperty("--x", `${x}px`);
-    piece.style.setProperty("--y", `${y}px`);
-    piece.style.setProperty("--spin", `${spin}deg`);
-    piece.style.setProperty("--duration", `${duration}s`);
-    piece.style.background = colors[index % colors.length];
-
-    confettiLayer.appendChild(piece);
+      confettiLayer.appendChild(piece);
+    }
   }
-}
 
-function showCookie() {
-  cookiePanel.classList.remove("is-hidden");
-  cookiePanel.classList.remove("hidden");
-  cookieButton.classList.remove("hidden");
-  cookieButton.disabled = false;
-  cookieButton.setAttribute("aria-hidden", "false");
-}
+  function showCookie() {
+    cookiePanel.classList.remove("is-hidden");
+    cookieButton.classList.remove("hidden");
+    cookieButton.disabled = false;
+    cookieButton.setAttribute("aria-hidden", "false");
+  }
 
-function hideCookie() {
-  cookiePanel.classList.add("is-hidden");
-  cookieButton.classList.add("hidden");
-  cookieButton.disabled = true;
-  cookieButton.setAttribute("aria-hidden", "true");
-}
+  function hideCookie() {
+    cookiePanel.classList.add("is-hidden");
+    cookieButton.classList.add("hidden");
+    cookieButton.disabled = true;
+    cookieButton.setAttribute("aria-hidden", "true");
+  }
 
-function showFortune(message) {
-  fortuneText.textContent = message;
-  fortuneCard.classList.remove("hidden");
-  fortuneCard.classList.add("is-visible");
-  fortuneCard.setAttribute("aria-hidden", "false");
-}
+  function showFortune(message) {
+    fortuneText.textContent = message;
+    fortuneCard.classList.remove("hidden");
+    fortuneCard.classList.add("is-visible");
+    fortuneCard.setAttribute("aria-hidden", "false");
+  }
 
-function hideFortune() {
-  fortuneCard.classList.remove("is-visible");
-  fortuneCard.classList.add("hidden");
-  fortuneCard.setAttribute("aria-hidden", "true");
-}
+  function hideFortune() {
+    fortuneCard.classList.remove("is-visible");
+    fortuneCard.classList.add("hidden");
+    fortuneCard.setAttribute("aria-hidden", "true");
+  }
 
-function openFortuneCookie() {
-  if (isOpening) return;
+  function openFortuneCookie() {
+    if (isOpening) return;
+    isOpening = true;
 
-  isOpening = true;
-  cookieButton.classList.remove("is-opening");
-  void cookieButton.offsetWidth;
-  cookieButton.classList.add("is-opening");
-  createConfetti();
-
-  const fortuneMessage = getNextFortune();
-
-  window.setTimeout(() => {
-    hideCookie();
-    showFortune(fortuneMessage);
-    anotherFortuneButton.classList.remove("hidden");
-    anotherFortuneButton.disabled = false;
-  }, 650);
-
-  window.setTimeout(() => {
     cookieButton.classList.remove("is-opening");
+    void cookieButton.offsetWidth;
+    cookieButton.classList.add("is-opening");
+
+    createConfetti();
+    const FortuneMessage = getNextFortune();
+
+    window.setTimeout(() => {
+      hideCookie();
+      showFortune(FortuneMessage);
+      anotherFortuneButton.classList.remove("hidden");
+      anotherFortuneButton.disabled = false;
+    }, 650);
+
+    window.setTimeout(() => {
+      cookieButton.classList.remove("is-opening");
+      isOpening = false;
+    }, 1250);
+  }
+
+  function resetForNewCycle() {
+    anotherFortuneButton.classList.add("hidden");
+    anotherFortuneButton.disabled = true;
+    hideFortune();
+    showCookie();
     isOpening = false;
-  }, 1250);
-}
+    cookieButton.classList.remove("is-opening");
+  }
 
-function resetForNewCycle() {
-  hideFortune();
-  anotherFortuneButton.classList.add("hidden");
-  anotherFortuneButton.disabled = true;
-  showCookie();
-}
+  cookieButton.addEventListener("click", openFortuneCookie);
 
-cookieButton.addEventListener("click", openFortuneCookie);
+  anotherFortuneButton.addEventListener("click", () => {
+    resetForNewCycle();
+    setTimeout(() => {
+      openFortuneCookie();
+    }, 100);
+  });
 
-anotherFortuneButton.addEventListener("click", () => {
-  resetForNewCycle();
-  openFortuneCookie();
+  window.addEventListener("keydown", (event) => {
+    if ((event.key === "Enter" || event.key === " ") && !cookieButton.classList.contains("hidden")) {
+      event.preventDefault();
+      openFortuneCookie();
+    }
+
+    if ((event.key === "Enter" || event.key === " ") && !anotherFortuneButton.classList.contains("hidden")) {
+      event.preventDefault();
+      anotherFortuneButton.click();
+    }
+  });
+
+  function initialize() {
+    hideFortune();
+    anotherFortuneButton.classList.add("hidden");
+    anotherFortuneButton.disabled = true;
+    showCookie();
+
+    if (usedFortuneIds.length >= fortunes.length) {
+      usedFortuneIds = [];
+      saveUsedFortunes();
+    }
+  }
+
+  initialize();
 });
-
-window.addEventListener("keydown", (event) => {
-  if ((event.key === "Enter" || event.key === " ") && !cookieButton.classList.contains("hidden")) {
-    event.preventDefault();
-    openFortuneCookie();
-  }
-
-  if ((event.key === "Enter" || event.key === " ") && !anotherFortuneButton.classList.contains("hidden")) {
-    event.preventDefault();
-    anotherFortuneButton.click();
-  }
-});
-
-if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  cookieButton.style.animation = "none";
-}
-
-function initialize() {
-  hideFortune();
-  anotherFortuneButton.classList.add("hidden");
-  anotherFortuneButton.disabled = true;
-  showCookie();
-
-  if (usedFortuneIds.length >= fortunes.length) {
-    usedFortuneIds = [];
-    saveUsedFortunes();
-  }
-}
-
-initialize();
