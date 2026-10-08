@@ -1,0 +1,452 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --cream: #f5f0e6;
+  --ivory: #faf7f0;
+  --forest: #17352a;
+  --forest-soft: #2b4d3e;
+  --burgundy: #641f2a;
+  --gold: #b89b5e;
+  --gold-soft: #d9c18d;
+  --dark: #1e211d;
+  --shadow: rgba(23, 21, 18, 0.14);
+  --shadow-strong: rgba(23, 21, 18, 0.2);
+  --paper: rgba(255, 255, 255, 0.35);
+  --line: rgba(184, 155, 94, 0.6);
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.2), transparent 48%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(23, 53, 42, 0.02)),
+    var(--cream);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(23, 21, 18, 0.012),
+      rgba(23, 21, 18, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.65), transparent 28%),
+    radial-gradient(circle at 80% 12%, rgba(23, 53, 42, 0.03), transparent 30%);
+  mix-blend-mode: multiply;
+  opacity: 0.75;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 56%, rgba(17, 17, 14, 0.08) 100%);
+}
+
+button,
+blockquote {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+}
+
+.page-shell {
+  position: relative;
+  width: min(100%, 28rem);
+  min-height: 100vh;
+  padding: 2.5rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  isolation: isolate;
+}
+
+.masthead {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.eyebrow,
+.fortune-header {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--forest);
+  font-weight: 600;
+}
+
+.eyebrow {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  line-height: 1;
+}
+
+.subtitle {
+  margin: 0.55rem auto 0;
+  max-width: 20rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: rgba(30, 33, 29, 0.8);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.fortune-stage {
+  position: relative;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  min-height: 23rem;
+}
+
+.cookie-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.cookie-panel.is-hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.fortune-cookie {
+  position: relative;
+  width: min(15rem, 62vw);
+  aspect-ratio: 1;
+  border: 0;
+  background: linear-gradient(135deg, #d8c39b 0%, #c7a772 18%, #f4e7c6 55%, #d0b07b 100%);
+  border-radius: 48% 52% 50% 50% / 53% 48% 52% 47%;
+  box-shadow:
+    inset 0 0 0 1px rgba(100, 31, 42, 0.08),
+    inset 0 -18px 26px rgba(79, 45, 19, 0.08),
+    0 20px 26px rgba(32, 27, 21, 0.14),
+    0 2px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transform: translateY(0) rotate(0deg);
+  transition: transform 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
+  animation: float-cookie 5.2s ease-in-out infinite;
+}
+
+.fortune-cookie:hover,
+.fortune-cookie:focus-visible {
+  transform: translateY(-2px) scale(1.012);
+  box-shadow:
+    inset 0 0 0 1px rgba(100, 31, 42, 0.08),
+    inset 0 -18px 26px rgba(79, 45, 19, 0.08),
+    0 22px 30px rgba(32, 27, 21, 0.16),
+    0 2px 0 rgba(255, 255, 255, 0.45);
+}
+
+.fortune-cookie:focus-visible,
+.another-fortune:focus-visible {
+  outline: 2px solid rgba(23, 53, 42, 0.65);
+  outline-offset: 3px;
+}
+
+.fortune-cookie::before,
+.fortune-cookie::after {
+  content: "";
+  position: absolute;
+  inset: 12% 18% 14% 20%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08));
+  opacity: 0.8;
+}
+
+.fortune-cookie::after {
+  inset: 12% 16% 20% 26%;
+  background: linear-gradient(130deg, rgba(100, 31, 42, 0.08), rgba(255, 255, 255, 0.2), transparent 65%);
+}
+
+.cookie-shadow {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -0.7rem;
+  height: 1.4rem;
+  background: rgba(25, 18, 14, 0.14);
+  filter: blur(8px);
+  border-radius: 50%;
+  z-index: -1;
+  transition: all 0.5s ease;
+}
+
+.cookie-glow {
+  position: absolute;
+  inset: 15%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.65), transparent 28%);
+  opacity: 0.85;
+}
+
+.cookie-sheen {
+  position: absolute;
+  inset: 20% 17% 38% 18%;
+  border-radius: 44% 56% 50% 50%;
+  transform: rotate(-18deg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.cookie-crease {
+  position: absolute;
+  inset: 12% 16% 12% 14%;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 31, 42, 0.08);
+  transform: rotate(12deg);
+}
+
+.cookie-crease::before,
+.cookie-crease::after {
+  content: "";
+  position: absolute;
+  inset: 18% 20% 18% 20%;
+  border-radius: 50%;
+  border-left: 1px solid rgba(100, 31, 42, 0.12);
+  border-bottom: 1px solid rgba(100, 31, 42, 0.08);
+}
+
+.cookie-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(3rem, 10vw, 4.25rem);
+  font-weight: 600;
+  color: rgba(23, 53, 42, 0.65);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.fortune-cookie.is-opening {
+  animation: cookie-open 1.25s cubic-bezier(0.25, 0.85, 0.32, 1) both;
+}
+
+.fortune-cookie.is-opening + .cookie-shadow {
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+.prompt {
+  margin: 1.1rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(30, 33, 29, 0.7);
+}
+
+.fortune-card {
+  position: absolute;
+  inset: auto 0.3rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem 1.2rem 1.3rem;
+  background: linear-gradient(180deg, rgba(250, 247, 240, 0.98), rgba(245, 240, 230, 0.96));
+  border: 1px solid rgba(184, 155, 94, 0.8);
+  border-radius: 1.1rem;
+  box-shadow: 0 16px 40px rgba(37, 31, 22, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.98);
+  transition: opacity 0.55s ease, transform 0.55s ease, visibility 0.55s ease;
+  max-width: 24rem;
+  margin: 0 auto;
+}
+
+.fortune-card.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.ornament {
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  font-size: 0.76rem;
+  margin-bottom: 0.8rem;
+}
+
+.fortune-header {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.8rem;
+}
+
+.fortune-text {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: 0.01em;
+  color: var(--dark);
+  font-weight: 500;
+  text-wrap: pretty;
+  max-width: 12ch;
+  text-align: center;
+}
+
+.fortune-signature {
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  color: rgba(30, 33, 29, 0.7);
+  font-style: italic;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.another-fortune {
+  border: 1px solid rgba(184, 155, 94, 0.8);
+  background: linear-gradient(180deg, var(--forest), #0f271f);
+  color: var(--ivory);
+  padding: 0.9rem 1.4rem;
+  min-width: 11.5rem;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(23, 53, 42, 0.16);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+}
+
+.another-fortune:hover,
+.another-fortune:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 28px rgba(23, 53, 42, 0.22);
+}
+
+.hidden {
+  display: none;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: 0.52rem;
+  height: 0.84rem;
+  opacity: 0;
+  border-radius: 0.14rem;
+  box-shadow: 0 0 10px rgba(23, 53, 42, 0.08);
+  animation: confetti-fall var(--duration) ease-out forwards;
+}
+
+@keyframes float-cookie {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-0.8deg);
+  }
+}
+
+@keyframes cookie-open {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  18% {
+    transform: scale(1.05) rotate(-3deg);
+  }
+  35% {
+    transform: scale(0.82) rotate(4deg);
+  }
+  60% {
+    transform: scale(0.66) rotate(-5deg) translateY(6px);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(0.08) rotate(10deg) translateY(26px);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.9);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--x), var(--y), 0) rotate(var(--spin)) scale(1);
+  }
+}
+
+@media (min-width: 640px) {
+  .page-shell {
+    width: min(100%, 35rem);
+    padding-top: 3rem;
+  }
+
+  .fortune-card {
+    inset: 0.25rem auto auto;
+    padding: 1.8rem 1.6rem 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fortune-cookie,
+  .fortune-card,
+  .another-fortune,
+  .cookie-panel {
+    transition: none !important;
+  }
+}
