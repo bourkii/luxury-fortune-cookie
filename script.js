@@ -62,15 +62,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function shuffleArray(items) {
-    const copy = [...items];
-    for (let index = copy.length - 1; index > 0; index -= 1) {
-      const randomIndex = Math.floor(Math.random() * (index + 1));
-      [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
-    }
-    return copy;
-  }
-
   function getNextFortune() {
     let available = fortunes.filter((fortune) => !usedFortuneIds.includes(fortune.id));
 
@@ -80,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       available = [...fortunes];
     }
 
-    const chosen = shuffleArray(available)[0];
+    const chosen = available[Math.floor(Math.random() * available.length)];
     usedFortuneIds.push(chosen.id);
     saveUsedFortunes();
     return chosen.text;

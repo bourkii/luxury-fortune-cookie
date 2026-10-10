@@ -28,14 +28,14 @@
   { "id": 27, "text": "A memorable moment is quietly gathering itself around you." },
   { "id": 28, "text": "What feels uncertain today is preparing to become a blessing." },
   { "id": 29, "text": "A warm, honest joy is heading in your direction." },
-  { "id": 30, "text": "Your life already contains more beauty than you can see from here." }
-{ "id": 31, "text": "Mucho ruido y pocas nueces." },
-{ "id": 32, "text": "Hoy no estás para nadie. Ni para ti." },
-{ "id": 33, "text": "Tu aura necesita una cañita." },
-{ "id": 34, "text": "Qué bien te irá. Ya si eso, mañana." },
-{ "id": 35, "text": "Sigue tus sueños. Pero pon una alarma." },
+  { "id": 30, "text": "Your life already contains more beauty than you can see from here." },
+  { "id": 31, "text": "Mucho ruido y pocas nueces." },
+  { "id": 32, "text": "Hoy no estás para nadie. Ni para ti." },
+  { "id": 33, "text": "Tu aura necesita una cañita." },
+  { "id": 34, "text": "Qué bien te irá. Ya si eso, mañana." },
+  { "id": 35, "text": "Sigue tus sueños. Pero pon una alarma." },
   { "id": 36, "text": "Tu karma está de vacaciones." },
- { "id": 37, "text": "A meaningful conversation is closer than you think." },
+  { "id": 37, "text": "A meaningful conversation is closer than you think." },
   { "id": 38, "text": "The gentlest path is not the least courageous one." },
   { "id": 39, "text": "A beautiful surprise will arrive with perfect timing." },
   { "id": 40, "text": "Your future holds a tender kind of brilliance." },
@@ -56,5 +56,5 @@
   { "id": 55, "text": "Estás brillando. Igual es el sudor." },
   { "id": 56, "text": "Confía en el proceso. Aunque tenga pinta de estafa." },
   { "id": 57, "text": "La vida te sonríe. Sospecha." },
-  { "id": 58, "text": "Tú puedes. Pero ¿quieres?" },
+  { "id": 58, "text": "Tú puedes. Pero ¿quieres?" }
 ]
