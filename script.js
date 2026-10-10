@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const STORAGE_KEY = "luxury-fortune-history";
+  const STORAGE_KEY = "luxury-fortune-history-v2";
   const cookieButton = document.getElementById("fortuneCookie");
   const cookiePanel = document.getElementById("cookiePanel");
   const fortuneCard = document.getElementById("fortuneCard");
@@ -24,15 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (
       !Array.isArray(fortunes) ||
       fortunes.length === 0 ||
-      fortunes.some((fortune) =>
-        !fortune ||
-        !Number.isInteger(fortune.id) ||
-        typeof fortune.text !== "string" ||
-        !fortune.text.trim()
-      ) ||
-      new Set(fortunes.map((fortune) => fortune.id)).size !== fortunes.length
+      fortunes.some((fortune) => typeof fortune !== "string" || !fortune.trim())
     ) {
-      throw new Error("Fortunes must be a non-empty array with unique integer IDs and non-empty text.");
+      throw new Error("Fortunes must be a non-empty array of non-empty strings.");
     }
   } catch (error) {
     console.error("Unable to initialize fortune messages.", error);
@@ -47,7 +41,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return [];
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed : [];
+      return Array.isArray(parsed)
+        ? parsed.filter((index) => Number.isInteger(index) && index >= 0 && index < fortunes.length)
+        : [];
     } catch (error) {
       console.warn("Unable to read saved fortunes.", error);
       return [];
@@ -63,18 +59,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getNextFortune() {
-    let available = fortunes.filter((fortune) => !usedFortuneIds.includes(fortune.id));
+    let available = fortunes
+      .map((fortune, index) => index)
+      .filter((index) => !usedFortuneIds.includes(index));
 
     if (available.length === 0) {
       usedFortuneIds = [];
       saveUsedFortunes();
-      available = [...fortunes];
+      available = fortunes.map((fortune, index) => index);
     }
 
-    const chosen = available[Math.floor(Math.random() * available.length)];
-    usedFortuneIds.push(chosen.id);
+    const chosenIndex = available[Math.floor(Math.random() * available.length)];
+    usedFortuneIds.push(chosenIndex);
     saveUsedFortunes();
-    return chosen.text;
+    return fortunes[chosenIndex];
   }
 
   function createConfetti() {
