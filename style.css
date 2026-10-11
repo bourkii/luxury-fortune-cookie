@@ -6,15 +6,8 @@
   --cream: #f5f0e6;
   --ivory: #faf7f0;
   --forest: #17352a;
-  --forest-soft: #2b4d3e;
-  --burgundy: #641f2a;
   --gold: #b89b5e;
-  --gold-soft: #d9c18d;
   --dark: #1e211d;
-  --shadow: rgba(23, 21, 18, 0.14);
-  --shadow-strong: rgba(23, 21, 18, 0.2);
-  --paper: rgba(255, 255, 255, 0.35);
-  --line: rgba(184, 155, 94, 0.6);
 }
 
 html {
@@ -147,117 +140,53 @@ button {
   width: min(15rem, 62vw);
   aspect-ratio: 1;
   border: 0;
-  background: linear-gradient(135deg, #d8c39b 0%, #c7a772 18%, #f4e7c6 55%, #d0b07b 100%);
-  border-radius: 48% 52% 50% 50% / 53% 48% 52% 47%;
-  box-shadow:
-    inset 0 0 0 1px rgba(100, 31, 42, 0.08),
-    inset 0 -18px 26px rgba(79, 45, 19, 0.08),
-    0 20px 26px rgba(32, 27, 21, 0.14),
-    0 2px 0 rgba(255, 255, 255, 0.4);
+  padding: 0;
+  background: transparent;
   cursor: pointer;
-  transform: translateY(0) rotate(0deg);
-  transition: transform 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
-  animation: float-cookie 5.2s ease-in-out infinite;
+  transition: transform 0.35s ease;
+  z-index: 1;
 }
 
 .fortune-cookie:hover,
 .fortune-cookie:focus-visible {
-  transform: translateY(-2px) scale(1.012);
-  box-shadow:
-    inset 0 0 0 1px rgba(100, 31, 42, 0.08),
-    inset 0 -18px 26px rgba(79, 45, 19, 0.08),
-    0 22px 30px rgba(32, 27, 21, 0.16),
-    0 2px 0 rgba(255, 255, 255, 0.45);
+  transform: translateY(-3px);
+}
+
+.ornament-half {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.ornament-half img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ornament-half-left {
+  clip-path: inset(0 50% 0 0);
+  transform-origin: 100% 50%;
+}
+
+.ornament-half-right {
+  clip-path: inset(0 0 0 50%);
+  transform-origin: 0 50%;
+}
+
+.fortune-cookie.is-opening .ornament-half-left {
+  animation: ornament-open-left 1.25s cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+
+.fortune-cookie.is-opening .ornament-half-right {
+  animation: ornament-open-right 1.25s cubic-bezier(0.2, 0.75, 0.3, 1) both;
 }
 
 .fortune-cookie:focus-visible,
 .another-fortune:focus-visible {
   outline: 2px solid rgba(23, 53, 42, 0.65);
   outline-offset: 3px;
-}
-
-.fortune-cookie::before,
-.fortune-cookie::after {
-  content: "";
-  position: absolute;
-  inset: 12% 18% 14% 20%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08));
-  opacity: 0.8;
-}
-
-.fortune-cookie::after {
-  inset: 12% 16% 20% 26%;
-  background: linear-gradient(130deg, rgba(100, 31, 42, 0.08), rgba(255, 255, 255, 0.2), transparent 65%);
-}
-
-.cookie-shadow {
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: -0.7rem;
-  height: 1.4rem;
-  background: rgba(25, 18, 14, 0.14);
-  filter: blur(8px);
-  border-radius: 50%;
-  z-index: -1;
-  transition: all 0.5s ease;
-}
-
-.cookie-glow {
-  position: absolute;
-  inset: 15%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.65), transparent 28%);
-  opacity: 0.85;
-}
-
-.cookie-sheen {
-  position: absolute;
-  inset: 20% 17% 38% 18%;
-  border-radius: 44% 56% 50% 50%;
-  transform: rotate(-18deg);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.cookie-crease {
-  position: absolute;
-  inset: 12% 16% 12% 14%;
-  border-radius: 50%;
-  border: 1px solid rgba(100, 31, 42, 0.08);
-  transform: rotate(12deg);
-}
-
-.cookie-crease::before,
-.cookie-crease::after {
-  content: "";
-  position: absolute;
-  inset: 18% 20% 18% 20%;
-  border-radius: 50%;
-  border-left: 1px solid rgba(100, 31, 42, 0.12);
-  border-bottom: 1px solid rgba(100, 31, 42, 0.08);
-}
-
-.cookie-label {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(3rem, 10vw, 4.25rem);
-  font-weight: 600;
-  color: rgba(23, 53, 42, 0.65);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-.fortune-cookie.is-opening {
-  animation: cookie-open 1.25s cubic-bezier(0.25, 0.85, 0.32, 1) both;
-}
-
-.fortune-cookie.is-opening + .cookie-shadow {
-  opacity: 0;
-  transform: scale(0.7);
 }
 
 .prompt {
@@ -281,8 +210,11 @@ button {
   box-shadow: 0 16px 40px rgba(37, 31, 22, 0.08);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(12px) scale(0.98);
-  transition: opacity 0.55s ease, transform 0.55s ease, visibility 0.55s ease;
+  transform: translateY(0.75rem) scale(0.98);
+  transition:
+    opacity 0.35s ease 0.12s,
+    transform 0.7s cubic-bezier(0.18, 0.8, 0.24, 1),
+    visibility 0.7s ease;
   width: min(100%, 24rem);
   margin: 0 auto;
 }
@@ -317,6 +249,7 @@ button {
   text-wrap: pretty;
   max-width: 12ch;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .fortune-signature {
@@ -369,53 +302,46 @@ button {
 
 .confetti-piece {
   position: absolute;
-  left: 50%;
-  top: 38%;
-  width: 0.52rem;
-  height: 0.84rem;
+  left: var(--origin-x);
+  top: var(--origin-y);
+  width: var(--size);
+  height: calc(var(--size) * 1.8);
   opacity: 0;
-  border-radius: 0.14rem;
+  border-radius: 0.12rem;
   box-shadow: 0 0 10px rgba(23, 53, 42, 0.08);
-  animation: confetti-fall var(--duration) ease-out forwards;
+  animation: confetti-fall var(--duration) cubic-bezier(0.12, 0.68, 0.26, 1) forwards;
 }
 
-@keyframes float-cookie {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(-0.8deg);
-  }
-}
-
-@keyframes cookie-open {
+@keyframes ornament-open-left {
   0% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
+    transform: translate(0, 0) rotate(0) scale(1);
   }
   18% {
-    transform: scale(1.05) rotate(-3deg);
-  }
-  35% {
-    transform: scale(0.82) rotate(4deg);
-  }
-  60% {
-    transform: scale(0.66) rotate(-5deg) translateY(6px);
-    opacity: 0.45;
+    transform: translate(-4px, -4px) rotate(-2deg) scale(1.02);
   }
   100% {
-    transform: scale(0.08) rotate(10deg) translateY(26px);
-    opacity: 0;
+    transform: translate(-112px, 14px) rotate(-12deg) scale(0.96);
+  }
+}
+
+@keyframes ornament-open-right {
+  0% {
+    transform: translate(0, 0) rotate(0) scale(1);
+  }
+  18% {
+    transform: translate(4px, -4px) rotate(2deg) scale(1.02);
+  }
+  100% {
+    transform: translate(112px, 14px) rotate(12deg) scale(0.96);
   }
 }
 
 @keyframes confetti-fall {
   0% {
     opacity: 0;
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.9);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6);
   }
-  10% {
+  12% {
     opacity: 1;
   }
   100% {

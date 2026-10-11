@@ -60,13 +60,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function getNextFortune() {
     let available = fortunes
-      .map((fortune, index) => index)
+      .map((_, index) => index)
       .filter((index) => !usedFortuneIds.includes(index));
 
     if (available.length === 0) {
       usedFortuneIds = [];
       saveUsedFortunes();
-      available = fortunes.map((fortune, index) => index);
+      available = fortunes.map((_, index) => index);
     }
 
     const chosenIndex = available[Math.floor(Math.random() * available.length)];
@@ -78,24 +78,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   function createConfetti() {
     confettiLayer.innerHTML = "";
 
-    const colors = ["#b89b5e", "#f5f0e6", "#17352a", "#641f2a", "#d9c18d"];
-    const totalPieces = 28;
+    const colors = ["#a82424", "#c83227", "#c99b32", "#e3c875", "#fff0cf"];
+    const cookieBounds = cookieButton.getBoundingClientRect();
+    const originX = cookieBounds.left + cookieBounds.width / 2;
+    const originY = cookieBounds.top + cookieBounds.height * 0.48;
+    const totalPieces = 46;
 
     for (let index = 0; index < totalPieces; index += 1) {
       const piece = document.createElement("span");
       piece.className = "confetti-piece";
 
       const angle = (Math.PI * 2 * index) / totalPieces;
-      const radius = 90 + Math.random() * 110;
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius + 50;
-      const spin = (Math.random() * 500 - 250).toFixed(0);
-      const duration = (1.6 + Math.random() * 1.5).toFixed(2);
+      const radius = 55 + Math.random() * 130;
+      const x = Math.cos(angle) * radius + (Math.random() * 50 - 25);
+      const y = Math.sin(angle) * radius * 0.45 + 105 + Math.random() * 60;
+      const spin = (Math.random() * 900 - 450).toFixed(0);
+      const duration = (1.25 + Math.random() * 1.2).toFixed(2);
 
+      piece.style.setProperty("--origin-x", `${originX}px`);
+      piece.style.setProperty("--origin-y", `${originY}px`);
       piece.style.setProperty("--x", `${x}px`);
       piece.style.setProperty("--y", `${y}px`);
       piece.style.setProperty("--spin", `${spin}deg`);
       piece.style.setProperty("--duration", `${duration}s`);
+      piece.style.setProperty("--size", `${4 + Math.random() * 5}px`);
       piece.style.background = colors[index % colors.length];
 
       confettiLayer.appendChild(piece);
@@ -143,12 +149,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       showFortune(fortuneMessage);
       anotherFortuneButton.classList.remove("hidden");
       anotherFortuneButton.disabled = false;
-    }, 650);
+    }, 1300);
 
     setTimeout(() => {
       cookieButton.classList.remove("is-opening");
       isOpening = false;
-    }, 1250);
+    }, 1500);
   }
 
   function resetForNewCycle() {
@@ -172,22 +178,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.preventDefault();
     e.stopPropagation();
     resetForNewCycle();
-    setTimeout(() => {
-      openFortuneCookie();
-    }, 100);
-  });
-
-  // Keyboard support
-  window.addEventListener("keydown", (event) => {
-    if ((event.key === "Enter" || event.key === " ") && !cookieButton.classList.contains("hidden") && !isOpening) {
-      event.preventDefault();
-      openFortuneCookie();
-    }
-
-    if ((event.key === "Enter" || event.key === " ") && !anotherFortuneButton.classList.contains("hidden")) {
-      event.preventDefault();
-      anotherFortuneButton.click();
-    }
   });
 
   // Initialize on page load
